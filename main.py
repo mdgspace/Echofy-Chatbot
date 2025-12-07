@@ -3,7 +3,7 @@ Main entry point for the RAG system.
 """
 
 # Server setup libraries
-from fastapi import FastAPI as server, HTTPException
+from fastapi import FastAPI as server, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -25,26 +25,34 @@ app.add_middleware(
 class Query(BaseModel):
     prompt: str
 
-@app.post("/query")
-def handleQuery(query: Query):
-    """
-    Endpoint to handle query requests.
-    
-    Args:
-        query (Query): The query object containing the prompt.
-        
-    Returns:
-        dict: The response containing the response and sources.
-    """
+@app.websocket("/query")
+async def handle_query_websocket(websocket: WebSocket):
+    await websocket.accept()
+    print("WebSocket connection established.")
     try:
-        response, contexts = orchestratePipeline(query_text=query.prompt)        
-        
-        return {"response": response, "sources": contexts, "status": 200}
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
+        # if the loop isn't used, then the WS will only accept the 1st request, return the response and close the conn. The loop ensures that the conn stays persistent.
+        while True: 
+            data = await websocket.receive_json()
+            query = Query(**data) # Dictionary unpacking operator.
 
+            response, contexts = orchestratePipeline(query_text=query.prompt)
+
+            # Send the response back to the client as JSON
+            await websocket.send_json(
+                {"response": response, "sources": contexts, "status": 200}
+            )
+
+    except WebSocketDisconnect:
+        print("WebSocket disconnected.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        # Send an error message to the client before closing
+        await websocket.send_json(
+            {"detail": str(e), "status": 500}
+        )
+        await websocket.close()
+
+    
 def orchestratePipeline(query_text):
     """Main function orchestrating the retrieval and generation process."""
     # Initialize embedding function

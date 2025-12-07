@@ -24,7 +24,7 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-LLM_MODEL = "deepseek/deepseek-r1:free"
+LLM_MODEL = "x-ai/grok-4-fast:free"
 LLM_TEMPERATURE = 0.85
 LLM_TOP_P = 0.9
 LLM_TOP_K = 10

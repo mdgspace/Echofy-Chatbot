@@ -228,7 +228,7 @@ The system can be configured by modifying parameters in `config.py`:
 - `DEFAULT_EMBEDDING_MODEL`: Model used for text embeddings (set via environment variable)
 
 ### LLM Configuration
-- `LLM_MODEL`: Model for text generation (default: `"deepseek/deepseek-r1:free"`)
+- `LLM_MODEL`: Model for text generation (default: `"x-ai/grok-4-fast:free"`)
 - `LLM_TEMPERATURE`: Temperature for text generation (default: `0.85`)
 - `LLM_TOP_P`: Top-p sampling parameter (default: `0.9`)
 - `LLM_TOP_K`: Top-k sampling parameter (default: `10`)

@@ -23,7 +23,12 @@ def generate_response(prompt):
             "model": LLM_MODEL,
             "messages": [{
                     "role": "user",
-                    "content": prompt
+                    "content": [
+                        {
+                            "type" : "text",
+                            "text" : prompt
+                        }
+                    ]
                 }],
             "temperature": LLM_TEMPERATURE,
             "top_p": LLM_TOP_P,
