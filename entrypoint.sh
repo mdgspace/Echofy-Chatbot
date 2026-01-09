@@ -1,10 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-# Run Hugging Face login once
-python -m startup.hf_login
-
-# Populate the DB
-python -m startup.db
-
-# Now start the Gunicorn server
+set -e
 exec gunicorn main:app -c gunicorn/gunicorn_config.py

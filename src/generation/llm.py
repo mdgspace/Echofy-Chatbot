@@ -2,10 +2,8 @@
 LLM interaction for generating responses.
 """
 
-import requests
-import json
-from config import LLM_API_URL, LLM_MODEL, LLM_TEMPERATURE, LLM_TOP_P, LLM_TOP_K, HEADERS
-
+from groq import Groq
+from config import LLM_MODEL, LLM_TEMPERATURE, LLM_TOP_P, GROQ_API_KEY
 
 def generate_response(prompt):
     """
@@ -18,50 +16,28 @@ def generate_response(prompt):
         str: The generated response
     """
     try:
-        # Prepare the payload containing Model Name, Prompt and other LLM Configurations
-        payload = json.dumps({
-            "model": LLM_MODEL,
-            "messages": [{
+        # Initialize Groq client (assumes GROQ_API_KEY is in os.environ)
+        client = Groq(api_key=GROQ_API_KEY)
+        
+        completion = client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=[
+                {
                     "role": "user",
-                    "content": [
-                        {
-                            "type" : "text",
-                            "text" : prompt
-                        }
-                    ]
-                }],
-            "temperature": LLM_TEMPERATURE,
-            "top_p": LLM_TOP_P,
-            "top_k": LLM_TOP_K,
-        })
+                    "content": prompt
+                }
+            ],
+            temperature=LLM_TEMPERATURE,
+            top_p=LLM_TOP_P,
+        )
         
-        result = requests.post(url=LLM_API_URL, data=payload, headers=HEADERS) # Implements the API Call
-     
-        # Check for HTTP errors
-        result.raise_for_status()
-        
-        # Parse response
-        response_json = result.json()
-        response_text = response_json.get('choices')[0].get('message').get('content')
+        response_text = completion.choices[0].message.content
         
         if not response_text:
             print("Warning: Empty response received from LLM")
             
         return response_text
     
-    # Handling Exceptions 
-    except requests.exceptions.HTTPError as e:
-        print(f"HTTP error occurred: {e}")
-        return f"Error generating response: HTTP error {e.response.status_code}"
-    
-    except requests.exceptions.ConnectionError:
-        print("Error: Cannot connect to LLM API. Is the server running?")
-        return "Error: Cannot connect to LLM API. Please check if the server is running."
-    
-    except requests.exceptions.Timeout:
-        print("Error: Request to LLM API timed out")
-        return "Error: Request timed out. The LLM is taking too long to respond."
-    
     except Exception as e:
-        print(f"Unexpected error generating response: {str(e)}")
+        print(f"Error generating response: {str(e)}")
         return f"Error generating response: {str(e)}"
