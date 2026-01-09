@@ -6,11 +6,8 @@ import argparse
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="RAG system for answering questions")
-    parser.add_argument("-q", "--query_text", type=str, help="The query text")
+    parser.add_argument("-q", "--query_text", type=str, help="The query text", default=None)
     args = parser.parse_args()
-    
-    if not args.query_text:
-        args.query_text = input("Enter your prompt: ")
     
     return args.query_text
 

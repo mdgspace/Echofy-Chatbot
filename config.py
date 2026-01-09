@@ -24,10 +24,9 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-LLM_MODEL = "x-ai/grok-4-fast:free"
+LLM_MODEL = "llama-3.3-70b-versatile"
 LLM_TEMPERATURE = 0.85
 LLM_TOP_P = 0.9
-LLM_TOP_K = 10
 
 # Retrieval configuration
 DEFAULT_RELEVANCE_THRESHOLD = 0.5
@@ -35,3 +34,6 @@ DEFAULT_RETRIEVAL_K = 10
 
 # Hugging Face Creds
 HUGGING_FACE_ACCESS_TOKEN = os.getenv("HUGGING_FACE_ACCESS_TOKEN")
+
+# Groq API Key
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")

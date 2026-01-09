@@ -56,6 +56,10 @@ def create_prompt(query_text, contexts):
         - If the question is related to MDG Space, the answer **must directly address it using the provided context**—no exceptions.
         - The response **must always be confident** and **must never suggest uncertainty** or imply that it is "trying" to answer the question.
         - **Hallucination is strictly prohibited**—only use the information available in the retrieved context.
+        - Treat similar names as the same entity. For example:
+            - "mdg", "mdg group", "mdg space", "mdgspace", "MDG Space" all refer to the same entity.
+            - Similarly, for projects: "Security app project", "security project", "security app" all refer to the same project.
+        - If the user greets (e.g., "hi", "hello"), respond with a friendly greeting like: "Hello! How can I assist you today?"
 
         Here is the list of contexts with relevance scores:
 
