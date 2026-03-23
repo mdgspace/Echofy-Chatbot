@@ -3,6 +3,9 @@ ChromaDB operations for vector storage and retrieval.
 """
 
 from langchain_chroma import Chroma
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def load_chroma(persist_directory, embedding_function):
@@ -22,7 +25,7 @@ def load_chroma(persist_directory, embedding_function):
             embedding_function=embedding_function
         )
     except Exception as e:
-        print(f"Error loading ChromaDB: {str(e)}")
+        logger.error(f"Error loading ChromaDB: {str(e)}")
         raise
 
 
@@ -45,5 +48,5 @@ def save_to_chroma(persist_directory, chunks, embedding_function):
 
     except Exception as e:
         # Handle Exceptions
-        print(f"Error saving to ChromaDB: {str(e)}")
+        logger.error(f"Error saving to ChromaDB: {str(e)}")
         raise
