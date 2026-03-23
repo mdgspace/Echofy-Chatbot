@@ -123,38 +123,3 @@ def orchestratePipeline(query_text, embedding_model):
     response = generate_response(prompt)
 
     return response, contexts
-
-
-# --- CLI / INTERACTIVE MODE SETUP ---
-if __name__ == "__main__":    
-    logger.info("CLI Starting...")
-    
-    # Load Model MANUALLY for CLI mode (since lifespan only runs for Server)
-    if global_embedding_model is None:
-        logger.info("Loading Model...")
-        global_embedding_model = StellaEmbeddings()
-        logger.info("Model loaded.")
-
-    initial_query = parse_arguments()
-    
-    if initial_query:
-        # One-off run
-        response, _ = orchestratePipeline(initial_query, global_embedding_model)
-        logger.info(f"\nResponse:\n{response}")
-    else:
-        # Interactive Loop
-        logger.info("\n--- Interactive Mode (Type 'exit' to quit) ---")
-        while True:
-            try:
-                user_input = input("\nEnter your prompt: ")
-                if user_input.lower() in ['exit', 'quit', 'q']:
-                    break
-                if not user_input.strip():
-                    continue
-                
-                response, _ = orchestratePipeline(user_input, global_embedding_model)
-                logger.info(f"\nResponse:\n{response}")
-                
-            except KeyboardInterrupt:
-                logger.info("\nBye!")
-                break
