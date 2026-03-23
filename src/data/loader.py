@@ -5,6 +5,9 @@ Data loading functionality.
 import json
 from langchain_core.documents import Document
 from config import JSON_PATH
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def load_qa_pairs():
@@ -24,14 +27,14 @@ def load_qa_pairs():
             doc = Document(page_content=content, metadata={"source": "qa_dataset"})
             documents.append(doc)
         
-        print(f"Loaded {len(documents)} QA pairs from {JSON_PATH}")
+        logger.info(f"Loaded {len(documents)} QA pairs from {JSON_PATH}")
         return documents
     except FileNotFoundError:
-        print(f"Error: File not found at {JSON_PATH}")
+        logger.error(f"File not found at {JSON_PATH}")
         return []
     except json.JSONDecodeError:
-        print(f"Error: Invalid JSON format in {JSON_PATH}")
+        logger.error(f"Invalid JSON format in {JSON_PATH}")
         return []
     except Exception as e:
-        print(f"Error loading QA pairs: {str(e)}")
+        logger.error(f"Error loading QA pairs: {str(e)}")
         return []

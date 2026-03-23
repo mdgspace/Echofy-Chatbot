@@ -4,6 +4,9 @@ Embedding models for text representation.
 
 from sentence_transformers import SentenceTransformer
 from config import DEFAULT_EMBEDDING_MODEL
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class StellaEmbeddings:
@@ -25,7 +28,7 @@ class StellaEmbeddings:
         try:
             self.client = SentenceTransformer(model_name, trust_remote_code=True)
         except Exception as e:
-            print(f"Error initializing embedding model: {str(e)}")
+            logger.error(f"Error initializing embedding model: {str(e)}")
             raise
 
     def embed_documents(self, texts):
@@ -44,7 +47,7 @@ class StellaEmbeddings:
         try:
             return self.client.encode(texts, normalize_embeddings=True).tolist()
         except Exception as e:
-            print(f"Error embedding documents: {str(e)}")
+            logger.error(f"Error embedding documents: {str(e)}")
             return []
 
     def embed_query(self, text):
@@ -63,5 +66,5 @@ class StellaEmbeddings:
         try:
             return self.client.encode(text, normalize_embeddings=True).tolist()
         except Exception as e:
-            print(f"Error embedding query: {str(e)}")
+            logger.error(f"Error embedding query: {str(e)}")
             return []

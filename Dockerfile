@@ -29,5 +29,7 @@ EXPOSE 8000
 # Make the Entrypoint executable
 RUN chmod +x entrypoint.sh
 
+ENV PYTHONUNBUFFERED=1
+
 # Execute the Entrypoint script
 ENTRYPOINT ["./entrypoint.sh"]

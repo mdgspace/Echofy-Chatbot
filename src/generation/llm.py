@@ -4,6 +4,9 @@ LLM interaction for generating responses.
 
 from groq import Groq
 from config import LLM_MODEL, LLM_TEMPERATURE, LLM_TOP_P, GROQ_API_KEY
+import logging
+
+logger = logging.getLogger(__name__)
 
 def generate_response(prompt):
     """
@@ -34,10 +37,10 @@ def generate_response(prompt):
         response_text = completion.choices[0].message.content
         
         if not response_text:
-            print("Warning: Empty response received from LLM")
+            logger.warning("Empty response received from LLM")
             
         return response_text
     
     except Exception as e:
-        print(f"Error generating response: {str(e)}")
+        logger.error(f"Error generating response: {str(e)}")
         return f"Error generating response: {str(e)}"
