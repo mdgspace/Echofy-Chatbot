@@ -8,7 +8,7 @@ Configuration settings for the RAG system.
 """
 
 # Mode
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "true").lower() in ("true", "1", "yes")
 
 # File paths
 CHROMA_PATH = "chroma"

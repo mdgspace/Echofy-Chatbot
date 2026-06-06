@@ -5,14 +5,12 @@ Main entry point for the RAG system.
 # Server setup libraries
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager 
 from pydantic import BaseModel
 
 # Configuration and utility libraries
 from src.embeddings.models import StellaEmbeddings
 from src.generation.llm import generate_response
 from src.services.rag_pipeline import create_prompt, initialize_database, retrieve_contexts
-from src.utils.helpers import parse_arguments
 
 # Authentication
 from config import HUGGING_FACE_ACCESS_TOKEN, DEBUG
@@ -50,22 +48,29 @@ logger = logging.getLogger(__name__)
 # This holds the model in RAM so we don't reload it
 global_embedding_model = None
 
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    """
-    Executes once when the server starts.KEN:
-    """
-    try:
-        global global_embedding_model
-        global_embedding_model = StellaEmbeddings()
-        login(token=HUGGING_FACE_ACCESS_TOKEN)
-        initialize_database(global_embedding_model)
-    except Exception as e:
-        raise RuntimeError(f"Failed to load model during startup: {e}")
-    yield # Server runs here
+# Preload model at module level (runs once in gunicorn master before workers fork)
+try:
+    if HUGGING_FACE_ACCESS_TOKEN:
+        try:
+            login(token=HUGGING_FACE_ACCESS_TOKEN)
+            logger.info("HuggingFace login successful")
+        except Exception as e:
+            logger.warning(f"HuggingFace login failed: {e}. Will try loading model from cache if available.")
+    else:
+        logger.warning("HUGGING_FACE_ACCESS_TOKEN not set. Model may fail to download if not cached.")
+except Exception as e:
+    logger.warning(f"Unexpected error during HuggingFace login: {e}")
+
+try:
+    global_embedding_model = StellaEmbeddings()
+    initialize_database(global_embedding_model)
+    logger.info("Model and database initialized successfully")
+except Exception as e:
+    logger.error(f"Startup initialization failed: {e}")
+    global_embedding_model = None
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
