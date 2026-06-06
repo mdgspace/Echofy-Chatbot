@@ -48,7 +48,6 @@ logger = logging.getLogger(__name__)
 # This holds the model in RAM so we don't reload it
 global_embedding_model = None
 
-# Preload model at module level (runs once in gunicorn master before workers fork)
 try:
     if HUGGING_FACE_ACCESS_TOKEN:
         try:
@@ -99,7 +98,6 @@ async def handle_query_websocket(websocket: WebSocket):
             data = await websocket.receive_json()
             query = Query(**data)
 
-            # Pass the PRE-LOADED global model
             response, _ = orchestratePipeline(query.prompt, global_embedding_model)
 
             await websocket.send_json(
