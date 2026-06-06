@@ -68,6 +68,8 @@ try:
 except Exception as e:
     logger.error(f"Startup initialization failed: {e}")
     global_embedding_model = None
+    if not DEBUG:
+        raise e
 
 
 app = FastAPI()
